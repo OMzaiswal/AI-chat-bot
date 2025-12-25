@@ -1,5 +1,6 @@
 import { Request, Response, Router } from "express";
 import { chatScehma, sessionIdSchema } from "../validators/chat.schema";
+import { handleUserMessage } from "../services/chat.service";
 
 
 const router = Router();
@@ -11,6 +12,10 @@ router.post('/message', (req: Request, res: Response) => {
         return;
     }
     const { message, sessionId } = parsed.data;
+
+    const history = handleUserMessage(message, sessionId);
+    
+
     res.status(200).json({message: `Received your message - ${message}`})
 } );
 
