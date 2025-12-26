@@ -31,6 +31,28 @@ router.post('/message', async (req: Request, res: Response) => {
 } );
 
 
+router.post('/history', async (req: Request, res: Response) => {
+    const parsed = sessionIdSchema.safeParse(req.body);
+    if (!parsed.success) {
+        res.status(400).json(parsed.error.flatten());
+        return;
+    }
+    const { sessionId, cursor } = parsed.data;
+    
+    try {
+        const history = await fetchHistory(sessionId, 20, cursor as string | undefined);
 
+        res.status(200).json({
+            success: true,
+            data: history,
+            nextCursor: history.length > 0 ? history?.[0].id : null
+        });
+        return;
+    } catch (err) {
+        console.log('Error: ', err)
+        res.status(500).json({ error: "Failed to fetch history" });
+        return;
+    }
+} )
 
 export default router;

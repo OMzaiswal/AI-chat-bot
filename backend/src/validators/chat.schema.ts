@@ -7,5 +7,5 @@ export const chatScehma = z.object({
 
 export const sessionIdSchema = z.object({
     sessionId: z.string().min(1, 'Invalid sessionId').max(30, 'Invalid sessonId'),
-    cursor: z.string().optional
+    cursor: z.string().optional()
 })
