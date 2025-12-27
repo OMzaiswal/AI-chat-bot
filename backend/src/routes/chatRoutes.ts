@@ -45,7 +45,7 @@ router.post('/history', async (req: Request, res: Response) => {
         res.status(200).json({
             success: true,
             data: history,
-            nextCursor: history.length > 0 ? history?.[0].id : null
+            nextCursor: history.length === 20 ? history[0].id : null
         });
         return;
     } catch (err) {
