@@ -23,7 +23,7 @@ router.post('/message', async (req: Request, res: Response) => {
     }
     res.status(200).json({
         sessionId: result.sessionId,
-        reply: result.aiReply
+        reply: result.message
     });
     return;
 

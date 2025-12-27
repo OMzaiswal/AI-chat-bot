@@ -9,7 +9,7 @@ type HistoryItem = {
 
 type HandleUserMessageResult = {
     sessionId: string;
-    aiReply: string;
+    message: {}
 }
 
 export const handleUserMessage = async (message: string, sessionId?: string ): Promise<HandleUserMessageResult> => {
@@ -74,7 +74,7 @@ export const handleUserMessage = async (message: string, sessionId?: string ): P
 
         return {
             sessionId: finalSessionId,
-            aiReply
+            message: addNewReply
         }
     } catch (err: any) {
         console.log('This is the catch error', err);
