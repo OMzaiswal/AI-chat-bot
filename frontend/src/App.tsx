@@ -3,15 +3,20 @@ import './App.css'
 import axios from 'axios';
 
 function App() {
+
+  interface Message {
+    id: string;
+    text: string;
+    sender: string;
+    conversationId?: string;
+    createdAt: string;
+    status?: 'sending' | 'sent' | 'erroe';
+  }
   
-  const [messages, setMessages] = useState<{
-    id: string,
-    text: string, 
-    sender: 'AI' | 'User',
-    createdAt: string
-  }[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [sessionId, setSessionId] = useState('');
   const [inputText, setInputText] = useState('');
+  // const [ aiReply, setAiReply] = useState('');
   const [nextCursor, setNextCursor] = useState<string | null>(null);
 
   const apiUrl = import.meta.env.VITE_API_URL;
@@ -22,12 +27,17 @@ function App() {
       setSessionId(existingSessionId)
 
       const fetchHistory = async () => {
-        const response = await axios.post(`${apiUrl}/chat/history`, {
-          sessionId
-        })
-        if (response.data.success) {
-          setMessages(response.data.data);
-          setNextCursor(response.data.nextCursor);
+        try {
+          const response = await axios.post(`${apiUrl}/chat/history`, {
+            sessionId
+          })
+          if (response.data.success) {
+            setMessages(response.data.data);
+            setNextCursor(response.data.nextCursor);
+          }
+        } catch(err) {
+          console.log('Error: ',err);
+          throw err;
         }
       }
       fetchHistory();
@@ -35,10 +45,51 @@ function App() {
   }, [])
 
   const handleSend = async () => {
-    const res = await axios.post(`${apiUrl}/chat/message`, {
-      message: inputText,
-      sessionId
-    })
+    if(!inputText.trim()) return;
+    const tmpUsrMsg: Message = {
+      id: Date.now().toString(),
+      text: inputText,
+      sender: 'User',
+      createdAt: new Date().toISOString(),
+      status: 'sending'
+    }
+    setMessages(prev => [...prev, tmpUsrMsg])
+    try {
+      const res = await axios.post(`${apiUrl}/chat/message`, {
+        message: inputText,
+        sessionId: sessionId || undefined
+      })
+      if (res.data.reply) {
+        const aiReply = res.data.reply;
+        setMessages(prev => [...prev, aiReply])
+      };
+      if (!sessionId && res.data.sessionId) {
+        setSessionId(res.data.sessionId);
+        localStorage.setItem('chat_session_id', res.data.sessionId)
+      };
+
+    } catch (err) {
+      console.log('Error: ',err);
+      throw err;
+    }
+  }
+
+  const loadMoreMsg = async () => {
+    if (!nextCursor) return;
+
+    try {
+      const res = await axios.post(`${apiUrl}/chat/history`, {
+        sessionId,
+        nextCursor
+      })
+      if (res.data.success) {
+        setMessages(res.data.data);
+        setNextCursor(res.data.nextCursor);
+      }
+    } catch (err) {
+      console.log('Error: ',err);
+      throw err;
+    }
   }
 
   return (
@@ -54,6 +105,7 @@ function App() {
           <div className='flex justify-center gap-2'>
             <textarea  
               rows={2}
+              value={inputText}
               placeholder='Type your message...'
               className='px-3 py-2 w-2xl bg-white rounded-2xl' 
               onChange={(e) => setInputText(e.target.value)}
