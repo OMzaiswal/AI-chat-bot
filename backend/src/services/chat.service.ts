@@ -64,6 +64,12 @@ export const handleUserMessage = async (message: string, sessionId?: string ): P
                 text: aiReply,
                 sender: 'AI',
                 conversationId
+            },
+            select: {
+                id: true,
+                text: true,
+                sender: true,
+                createdAt: true
             }
         })
 

@@ -1,17 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
+import type { Message } from './types/Chat';
 import './App.css'
 import axios from 'axios';
 
 function App() {
 
-  interface Message {
-    id: string;
-    text: string;
-    sender: string;
-    conversationId?: string;
-    createdAt: string;
-    status?: 'sending' | 'sent' | 'erroe';
-  }
+  
   
   const [messages, setMessages] = useState<Message[]>([]);
   const [sessionId, setSessionId] = useState('');
@@ -157,7 +151,8 @@ function App() {
               className={`flex ${msg.sender === 'User' ? 'justify-end' : 'justify-start'}`}
             >
               <p
-              className={`px-4 py-2 text-sm lg:text-lg rounded-2xl shadow max-w-[70%] text-start ${msg.sender === 'User' ? 'bg-blue-200' :  'bg-blue-100'}`}
+                className={`px-4 py-2 text-sm lg:text-lg rounded-2xl shadow max-w-[70%] text-start wrap-break-words overflow-hidden whitespace-pre-wrap ${msg.sender === 'User' ? 'bg-blue-200' :  'bg-blue-100'}`}
+                style={{ overflowWrap: 'anywhere' }}
               >
                 {msg.text}
               </p>
