@@ -118,7 +118,9 @@ function App() {
   }
 
   const scrollTobottom = () => {
-    messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    setTimeout(() => {
+      messageEndRef.current?.scrollIntoView();
+    }, 2000)
   }
 
   const handleScroll = () => {
@@ -131,9 +133,9 @@ function App() {
   }
 
   return (
-    <div className='flex flex-col h-screen gap-2 py-8 justify-center items-center'>
+    <div className='flex flex-col h-screen gap-2 py-4 px-2 lg:py-8 justify-center items-center'>
       <h1 className='text-2xl font-semibold'>Customer Support Chat</h1>
-      <div className='bg-gray-300 h-full w-full max-w-4xl rounded-2xl shadow-lg flex flex-col'>
+      <div className='bg-gray-300 h-full w-full max-w-4xl md:rounded-2xl shadow-lg flex flex-col'>
 
         <div 
           ref={messageContainerRef}
